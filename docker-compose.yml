@@ -1,0 +1,64 @@
+version: '3'
+networks:
+  auto.net:
+    driver: bridge
+
+services:
+
+  api.auto:
+    image: 'canals/php:latest'
+    ports:
+      - '2080:80'
+      - '1443:443'
+    volumes:
+      - ./immo-api-php-main/public:/var/www/html
+      - ./immo-api-php-main:/var/www
+    working_dir: /var/www/
+    networks:
+      auto.net:
+        aliases:
+          - api.auto.local
+    depends_on:
+      - auto.db
+    env_file: ./.env
+
+  auto.db:
+    image: 'mysql:latest'
+    env_file: ./.env
+    ports:
+      - '18252:80'
+    networks:
+      - auto.net
+    volumes:
+      - ./immo-api-php-main/sql:/var/sql
+
+  adminer:
+    image: adminer
+    ports:
+      - '8080:8080'
+    networks:
+      - auto.net
+
+  auto.client:
+    build:
+        context: ./immo-client-vue-main
+        dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./immo-client-vue-main/:/app
+      - /app/node_modules
+    networks:
+      - auto.net
+
+  auto.admin:
+    build:
+      context: ./immo-admin-react-main
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3000'
+    volumes:
+      - ./immo-admin-react-main/:/app
+      - /app/node_modules
+    networks:
+      - auto.net
