@@ -34,7 +34,7 @@ cd projet-immobilier
 
 2. Pour lancer tous les services, utilisez la commande Docker Compose suivante :
 ````bash
-docker-compose up
+docker-compose up --build
 ````
 
 3. Les différents services seront accessibles aux adresses spécifiées ci-dessus.
